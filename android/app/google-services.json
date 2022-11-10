@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "523653024449",
+    "project_id": "shortcut-4464b",
+    "storage_bucket": "shortcut-4464b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523653024449:android:74426feb6c0e017b216240",
+        "android_client_info": {
+          "package_name": "app.hexacodes.shortcut"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523653024449-e60bvtj46276m9btv1qnegbshkk60n05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoZMMeVW8dJYZRYe0Mry_loKspQppN3nI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523653024449-e60bvtj46276m9btv1qnegbshkk60n05.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "523653024449-jdofmahp3fmckri80m0nookkauc109gn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.hexacodes.shortcut"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523653024449:android:1d6c69951a6a4919216240",
+        "android_client_info": {
+          "package_name": "app.hexacodes.shortcut_delivery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523653024449-e60bvtj46276m9btv1qnegbshkk60n05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoZMMeVW8dJYZRYe0Mry_loKspQppN3nI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523653024449-e60bvtj46276m9btv1qnegbshkk60n05.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "523653024449-jdofmahp3fmckri80m0nookkauc109gn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.hexacodes.shortcut"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523653024449:android:af0362bf290c82b3216240",
+        "android_client_info": {
+          "package_name": "app.hexacodes.shortcut_restaurant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523653024449-e60bvtj46276m9btv1qnegbshkk60n05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoZMMeVW8dJYZRYe0Mry_loKspQppN3nI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523653024449-e60bvtj46276m9btv1qnegbshkk60n05.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "523653024449-jdofmahp3fmckri80m0nookkauc109gn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.hexacodes.shortcut"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
