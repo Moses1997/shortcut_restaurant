@@ -83,7 +83,7 @@ class NotificationHelper {
       String orderID, FlutterLocalNotificationsPlugin fln) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'shortcut1',
+      'shortcut2',
       'shortcut',
       channelDescription: "Shortcut",
       playSound: true,
@@ -108,7 +108,7 @@ class NotificationHelper {
     );
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'shortcut1',
+      'shortcut2',
       'shortcut',
       channelDescription: 'shortcut',
       importance: Importance.high,
@@ -144,7 +144,7 @@ class NotificationHelper {
     );
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'shortcut1',
+      'shortcut2',
       'shortcut',
       channelDescription: 'shortcut',
       largeIcon: FilePathAndroidBitmap(largeIconPath),

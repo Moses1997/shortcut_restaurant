@@ -12,7 +12,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-
 import '../../../controller/order_controller.dart';
 import '../../../helper/notification_helper.dart';
 
@@ -59,6 +58,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationsSettings);
     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+    FirebaseMessaging.instance.getInitialMessage().then((message) async {
+      if (message != null) {
+        print("onMessage: ${message?.data}");
+        String _type = message.notification.bodyLocKey;
+        String _body = message.notification.body;
+        Get.find<OrderController>().getPaginatedOrders(1, true);
+        Get.find<OrderController>().getCurrentOrders();
+        if (_type == 'new_order' || _body == 'New order placed') {
+          // _orderCount = _orderCount + 1;
+          await Get.dialog(NewRequestDialog());
+        } else {
+          await NotificationHelper.showNotification(
+              message, flutterLocalNotificationsPlugin, false);
+        }
+      }
+    });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       // if(Get.find<OrderController>().runningOrders != null) {
       //   _orderCount = Get.find<OrderController>().runningOrders.length;
