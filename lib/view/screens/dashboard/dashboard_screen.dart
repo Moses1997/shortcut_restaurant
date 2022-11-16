@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:efood_multivendor_restaurant/controller/order_controller.dart';
-import 'package:efood_multivendor_restaurant/helper/notification_helper.dart';
 import 'package:efood_multivendor_restaurant/util/dimensions.dart';
 import 'package:efood_multivendor_restaurant/util/images.dart';
 import 'package:efood_multivendor_restaurant/view/screens/bank/wallet_screen.dart';
@@ -16,6 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
+import '../../../controller/order_controller.dart';
+import '../../../helper/notification_helper.dart';
+
 class DashboardScreen extends StatefulWidget {
   final int pageIndex;
   DashboardScreen({@required this.pageIndex});
@@ -29,7 +29,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _pageIndex = 0;
   List<Widget> _screens;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   // Timer _timer;
   // int _orderCount;
 
@@ -54,37 +53,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
 
     var androidInitialize = AndroidInitializationSettings('notification_icon');
-    var iOSInitialize = DarwinInitializationSettings();
+    var iOSInitialize = IOSInitializationSettings();
     var initializationsSettings =
         InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin.initialize(
-      initializationsSettings,
-      // onSelectNotification: (payload) {
-      //   debugPrint('notification payload: $payload');
-      //   // if (_type == 'new_order' || _body == 'New order placed') {
-      //   // _orderCount = _orderCount + 1;
-      //   Get.dialog(NewRequestDialog());
-      //   // } else {
-      //   //   NotificationHelper.showNotification(
-      //   //       message, flutterLocalNotificationsPlugin, false);
-      //   // }
-      // },
-    );
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("onMessage: ${message.data}");
-      String _type = message.notification.bodyLocKey;
-      String _body = message.notification.body;
-      Get.find<OrderController>().getPaginatedOrders(1, true);
-      Get.find<OrderController>().getCurrentOrders();
-      if (_type == 'new_order' || _body == 'New order placed') {
-        // _orderCount = _orderCount + 1;
-        Get.dialog(NewRequestDialog());
-      } else {
-        NotificationHelper.showNotification(
-            message, flutterLocalNotificationsPlugin, false);
-      }
-    });
+    flutterLocalNotificationsPlugin.initialize(initializationsSettings);
+    FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       // if(Get.find<OrderController>().runningOrders != null) {
       //   _orderCount = Get.find<OrderController>().runningOrders.length;

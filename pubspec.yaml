@@ -16,9 +16,9 @@ dependencies:
   get: ^4.6.1
   shared_preferences: ^2.0.6
   connectivity: ^3.0.6
-  firebase_core: ^1.24.0
-  firebase_messaging: ^13.1.0
-  flutter_local_notifications: ^12.0.2
+  firebase_core: ^1.2.1
+  firebase_messaging: ^11.2.4
+  flutter_local_notifications: ^9.2.0
   path_provider: ^2.0.2
   url_strategy: ^0.2.0
   shimmer_animation: ^2.0.0
@@ -39,6 +39,7 @@ dependencies:
   modal_bottom_sheet: ^2.1.2
   flutter_ringtone_player: ^3.2.0
   connectycube_flutter_call_kit: ^2.2.1
+  workmanager: ^0.5.1
 
 #  blue_thermal_printer: ^1.1.8
 #  bluetooth_print: ^3.0.1

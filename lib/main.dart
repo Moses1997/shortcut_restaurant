@@ -17,64 +17,48 @@ import 'package:get/get.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'controller/order_controller.dart';
 import 'helper/get_di.dart' as di;
+import 'package:workmanager/workmanager.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-Future<void> main() async {
-  if (!GetPlatform.isWeb) {
-    HttpOverrides.global = new MyHttpOverrides();
-  }
-  setPathUrlStrategy();
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  Map<String, Map<String, String>> _languages = await di.init();
-
-  int _orderID;
-  onSelectNotification(NotificationResponse payload) {
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        print("onMessage: ${message?.data}");
-        String _type = message.notification.bodyLocKey;
-        String _body = message.notification.body;
-        Get.find<OrderController>().getPaginatedOrders(1, true);
-        Get.find<OrderController>().getCurrentOrders();
-        if (_type == 'new_order' || _body == 'New order placed') {
-          // _orderCount = _orderCount + 1;
-          Get.dialog(NewRequestDialog());
-        } else {
-          NotificationHelper.showNotification(
-              message, flutterLocalNotificationsPlugin, false);
+@pragma(
+    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+void callbackDispatcher(_orderID) {
+  Workmanager().executeTask((task, inputData) async {
+    try {
+      if (GetPlatform.isMobile) {
+        final NotificationAppLaunchDetails notificationAppLaunchDetails =
+            await flutterLocalNotificationsPlugin
+                .getNotificationAppLaunchDetails();
+        if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+          _orderID = notificationAppLaunchDetails.payload != null
+              ? int.parse(notificationAppLaunchDetails.payload)
+              : null;
         }
-      }
-    });
-    // debugPrint(payload + 'PPPP');
-    // if (payload.contains('New order placed')) {
-    //   Get.dialog(NewRequestDialog());
-    // } else {
-    //   NotificationHelper.showNotification(
-    //       message, flutterLocalNotificationsPlugin, false);
-    // }
-  }
+        await NotificationHelper.initialize(
+          flutterLocalNotificationsPlugin,
+        );
+        FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+        FirebaseMessaging.instance.getInitialMessage().then((message) async {
+          if (message != null) {
+            print("onMessage: ${message?.data}");
+            String _type = message.notification.bodyLocKey;
+            String _body = message.notification.body;
+            Get.find<OrderController>().getPaginatedOrders(1, true);
+            Get.find<OrderController>().getCurrentOrders();
+            if (_type == 'new_order' || _body == 'New order placed') {
+              // _orderCount = _orderCount + 1;
+              await Get.dialog(NewRequestDialog());
+            } else {
+              await NotificationHelper.showNotification(
+                  message, flutterLocalNotificationsPlugin, false);
+            }
+          }
+        });
 
-  try {
-    if (GetPlatform.isMobile) {
-      final NotificationAppLaunchDetails notificationAppLaunchDetails =
-          await flutterLocalNotificationsPlugin
-              .getNotificationAppLaunchDetails();
-      if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
-        _orderID =
-            notificationAppLaunchDetails.notificationResponse.payload != null
-                ? int.parse(
-                    notificationAppLaunchDetails.notificationResponse.payload)
-                : null;
-      }
-      await NotificationHelper.initialize(
-          flutterLocalNotificationsPlugin, onSelectNotification);
-      FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
-      FirebaseMessaging.instance.getInitialMessage().then((message) {
-        if (message != null) {
-          print("onMessage: ${message?.data}");
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+          print("onMessage: ${message.data}");
           String _type = message.notification.bodyLocKey;
           String _body = message.notification.body;
           Get.find<OrderController>().getPaginatedOrders(1, true);
@@ -86,24 +70,71 @@ Future<void> main() async {
             NotificationHelper.showNotification(
                 message, flutterLocalNotificationsPlugin, false);
           }
-        }
-      });
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("onMessage: ${message.data}");
-        String _type = message.notification.bodyLocKey;
-        String _body = message.notification.body;
-        Get.find<OrderController>().getPaginatedOrders(1, true);
-        Get.find<OrderController>().getCurrentOrders();
-        if (_type == 'new_order' || _body == 'New order placed') {
-          // _orderCount = _orderCount + 1;
-          Get.dialog(NewRequestDialog());
-        } else {
-          NotificationHelper.showNotification(
-              message, flutterLocalNotificationsPlugin, false);
-        }
-      });
-    }
-  } catch (e) {}
+        });
+      }
+    } catch (e) {} //simpleTask will be emitted here.
+    return Future.value(true);
+  });
+}
+
+Future<void> main() async {
+  if (!GetPlatform.isWeb) {
+    HttpOverrides.global = new MyHttpOverrides();
+  }
+  int _orderID;
+  callbackDispatcher(_orderID);
+  setPathUrlStrategy();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  Map<String, Map<String, String>> _languages = await di.init();
+
+  // try {
+  //   if (GetPlatform.isMobile) {
+  //     final NotificationAppLaunchDetails notificationAppLaunchDetails =
+  //         await flutterLocalNotificationsPlugin
+  //             .getNotificationAppLaunchDetails();
+  //     if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+  //       _orderID = notificationAppLaunchDetails.payload != null
+  //           ? int.parse(notificationAppLaunchDetails.payload)
+  //           : null;
+  //     }
+  //     await NotificationHelper.initialize(
+  //       flutterLocalNotificationsPlugin,
+  //     );
+  //     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+  //     FirebaseMessaging.instance.getInitialMessage().then((message) async {
+  //       if (message != null) {
+  //         print("onMessage: ${message?.data}");
+  //         String _type = message.notification.bodyLocKey;
+  //         String _body = message.notification.body;
+  //         Get.find<OrderController>().getPaginatedOrders(1, true);
+  //         Get.find<OrderController>().getCurrentOrders();
+  //         if (_type == 'new_order' || _body == 'New order placed') {
+  //           // _orderCount = _orderCount + 1;
+  //           await Get.dialog(NewRequestDialog());
+  //         } else {
+  //           await NotificationHelper.showNotification(
+  //               message, flutterLocalNotificationsPlugin, false);
+  //         }
+  //       }
+  //     });
+
+  //     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+  //       print("onMessage: ${message.data}");
+  //       String _type = message.notification.bodyLocKey;
+  //       String _body = message.notification.body;
+  //       Get.find<OrderController>().getPaginatedOrders(1, true);
+  //       Get.find<OrderController>().getCurrentOrders();
+  //       if (_type == 'new_order' || _body == 'New order placed') {
+  //         // _orderCount = _orderCount + 1;
+  //         Get.dialog(NewRequestDialog());
+  //       } else {
+  //         NotificationHelper.showNotification(
+  //             message, flutterLocalNotificationsPlugin, false);
+  //       }
+  //     });
+  //   }
+  // } catch (e) {}
 
   runApp(MyApp(languages: _languages, orderID: _orderID));
 }

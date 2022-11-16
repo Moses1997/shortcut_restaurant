@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:efood_multivendor_restaurant/util/app_constants.dart';
@@ -7,23 +6,26 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
+import '../view/screens/dashboard/widget/new_request_dialog.dart';
+
 class NotificationHelper {
-  AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    importance: Importance.max,
-  );
+  // AndroidNotificationChannel channel = AndroidNotificationChannel(
+  //     'high_importance_channel', // id
+  //     'High Importance Notifications', // title
+  //     importance: Importance.max,
+  //     playSound: true);
 
   static Future<void> initialize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
-      void Function(NotificationResponse) onSelectNotification) async {
+      {void Function(String) onSelectNotification}) async {
     var androidInitialize =
         new AndroidInitializationSettings('notification_icon');
-    var iOSInitialize = new DarwinInitializationSettings();
+    var iOSInitialize = new IOSInitializationSettings();
     var initializationsSettings = new InitializationSettings(
         android: androidInitialize, iOS: iOSInitialize);
+
     flutterLocalNotificationsPlugin.initialize(initializationsSettings,
-        onDidReceiveNotificationResponse: onSelectNotification);
+        onSelectNotification: onSelectNotification);
   }
 
   static Future<void> showNotification(RemoteMessage message,
@@ -81,14 +83,15 @@ class NotificationHelper {
       String orderID, FlutterLocalNotificationsPlugin fln) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'shortcut',
+      'shortcut1',
       'shortcut',
       channelDescription: "Shortcut",
       playSound: true,
       importance: Importance.high,
       priority: Priority.high,
       fullScreenIntent: true,
-      sound: RawResourceAndroidNotificationSound('notification'),
+      enableVibration: true,
+      sound: RawResourceAndroidNotificationSound('notifications'),
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -105,7 +108,7 @@ class NotificationHelper {
     );
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'shortcut',
+      'shortcut1',
       'shortcut',
       channelDescription: 'shortcut',
       importance: Importance.high,
@@ -113,7 +116,8 @@ class NotificationHelper {
       styleInformation: bigTextStyleInformation,
       priority: Priority.high,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('notification'),
+      enableVibration: true,
+      sound: RawResourceAndroidNotificationSound('notifications'),
     );
     NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -140,7 +144,7 @@ class NotificationHelper {
     );
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'shortcut',
+      'shortcut1',
       'shortcut',
       channelDescription: 'shortcut',
       largeIcon: FilePathAndroidBitmap(largeIconPath),
@@ -149,8 +153,10 @@ class NotificationHelper {
       styleInformation: bigPictureStyleInformation,
       importance: Importance.high,
       fullScreenIntent: true,
-      sound: RawResourceAndroidNotificationSound('notification'),
+      enableVibration: true,
+      sound: RawResourceAndroidNotificationSound('notifications'),
     );
+
     final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await fln.show(0, title, body, platformChannelSpecifics, payload: orderID);
@@ -170,15 +176,25 @@ class NotificationHelper {
 Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
   print(
       "onBackground: ${message.notification.title}/${message.notification.body}/${message.notification.titleLocKey}");
-
+  String _type = message.notification.bodyLocKey;
+  String _body = message.notification.body;
   var androidInitialize =
       new AndroidInitializationSettings('notification_icon');
-  var iOSInitialize = new DarwinInitializationSettings();
+  var iOSInitialize = new IOSInitializationSettings();
   var initializationsSettings = new InitializationSettings(
       android: androidInitialize, iOS: iOSInitialize);
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   flutterLocalNotificationsPlugin.initialize(initializationsSettings);
-  NotificationHelper.showNotification(
-      message, flutterLocalNotificationsPlugin, true);
+  if (_type == 'new_order' || _body == 'New order placed') {
+    // _orderCount = _orderCount + 1;
+    await Get.dialog(NewRequestDialog());
+    // NotificationHelper.showNotification(
+    //     message, flutterLocalNotificationsPlugin, true);
+  } else {
+    NotificationHelper.showNotification(
+        message, flutterLocalNotificationsPlugin, true);
+  }
+  // NotificationHelper.showNotification(
+  //     message, flutterLocalNotificationsPlugin, true);
 }
